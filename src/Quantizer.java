@@ -45,14 +45,6 @@ public class Quantizer {
 
         //Max 10 iterations to get least error blocks
         for (int i=0; i<10; i++) {
-//            ranges = new ArrayList<>();
-//            for (int j=0; j<breakPoints.size(); j++) {
-//                ranges.add(new ArrayList<>());
-//            }
-//            for (Matrix matrix : sourceMatrices) {
-//                int breakPointIndex = matrix.getNearestMatrix(breakPoints);
-//                ranges.get(breakPointIndex).add(matrix);
-//            }
             ArrayList<Matrix> newAverages = new ArrayList<>();
             for (ArrayList<Matrix> range : ranges) {
                 if (range.size() > 0) {
@@ -105,7 +97,6 @@ public class Quantizer {
         //Object stream  for serialization
         String compressedPath = imagePath.substring(0, imagePath.lastIndexOf('.')) + ".quantized";
         ObjectOutputStream outObjectStreamer = new ObjectOutputStream(new FileOutputStream(compressedPath));
-        System.out.println(imageArray[0].length);
         outObjectStreamer.writeInt(imageArray[0].length); //Image length
         outObjectStreamer.writeInt(imageArray.length); //Image Height
         outObjectStreamer.writeInt(vectorWidth);
@@ -119,21 +110,6 @@ public class Quantizer {
         fw.write("vector height: " + vectorHeight + "\n");
         fw.write("Code book: \n" + book + "\n");
         fw.close();
-
-//        for (int i=0, j=1; i<image.size(); i++, j++) {
-//            System.out.print(image.get(i) + ", ");
-//            if (j == imageArray[0].length/vectorWidth) {
-//                System.out.println();
-//                j = 1;
-//            }
-//        }
-//
-//        for (int i=0; i< imageArray.length; i++) {
-//            for (int j=0; j< imageArray[0].length; j++) {
-//                System.out.print(imageArray[i][j] + ", ");
-//            }
-//            System.out.println();
-//        }
     }
 
     public static void decompress(String path) throws IOException, ClassNotFoundException {
@@ -151,29 +127,17 @@ public class Quantizer {
         for (int i=0; i<labeledMatrices.size(); i++) {
             int label = labeledMatrices.get(i);
             ArrayList<ArrayList<Integer>> book = codeBook.get(label);
-//            System.out.println(book.size());
-//            System.out.println(book.get(0).size());
             for (int ii=0; ii<vectorWidth; ii++) {
                 for (int jj=0; jj<vectorHeight; jj++) {
                     int col = (i*vectorWidth)%imageWidth + ii;
                     int row = x+jj;
-//                    System.out.print("row: " + row);
-//                    System.out.print(", col: " + col + ", ");
                     decompressedImage[row][col] = book.get(ii).get(jj);
                 }
             }
-//            System.out.println();
             if (((i+1)*vectorWidth)%(imageWidth) == 0 && i>0) {
-                x++;
+                x+=vectorHeight;
             }
         }
-
-//        for (int i=0; i< decompressedImage.length; i++) {
-//            for (int j=0; j< decompressedImage[0].length; j++) {
-//                System.out.print(decompressedImage[i][j] + ", ");
-//            }
-//            System.out.println();
-//        }
 
         BufferedImage image = new BufferedImage(decompressedImage[0].length, decompressedImage.length, BufferedImage.TYPE_INT_RGB);
         for (int i= 0; i < decompressedImage.length; i++) {
@@ -184,31 +148,10 @@ public class Quantizer {
         }
         String outPath = path.substring(0, path.lastIndexOf('.')) + "-Decompressed.jpg";
         ImageIO.write(image, "jpg", new File(outPath));
-//        for (int i=0; i< decompressedImage.length; i++) {
-//            for (int j=0; j< decompressedImage[0].length; j++) {
-//                System.out.print(decompressedImage[i][j] + ", ");
-//            }
-//            System.out.println();
-//        }
-
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-//        ArrayList<Matrix> image = new ArrayList<>();
-//        image.add(new Matrix(new int[][]{new int[]{1, 2}, new int[]{3, 4}}));
-//        image.add(new Matrix(new int[][]{new int[]{7, 9}, new int[]{6, 6}}));
-//        image.add(new Matrix(new int[][]{new int[]{4, 11}, new int[]{12, 12}}));
-//        image.add(new Matrix(new int[][]{new int[]{4, 9}, new int[]{10, 10}}));
-//        image.add(new Matrix(new int[][]{new int[]{15, 14}, new int[]{20, 18}}));
-//        image.add(new Matrix(new int[][]{new int[]{9, 9}, new int[]{8, 8}}));
-//        image.add(new Matrix(new int[][]{new int[]{4, 3}, new int[]{4, 5}}));
-//        image.add(new Matrix(new int[][]{new int[]{17, 16}, new int[]{18, 18}}));
-//        image.add(new Matrix(new int[][]{new int[]{1, 4}, new int[]{5, 6}}));
-//
-////        System.out.println(image);
-//        ArrayList<Matrix> blocks = generateBlocks(image, 4);
-//        System.out.println(blocks);
-        compress("test2.png", 2, 2, 20);
-        decompress("test2.quantized");
+        compress("test.png", 2, 2, 60);
+        decompress("test.quantized");
     }
 }

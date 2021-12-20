@@ -16,10 +16,6 @@ public class ImageFile {
             int modifiedWidth = widthRemainder == 0 ? width : width + (vectorWidth - widthRemainder);
             int modifiedHeight = heightRemainder == 0 ? height : height + (vectorHeight - heightRemainder);
             int[][] imageArray = new int[modifiedHeight][modifiedWidth];
-            System.out.println("orig width: " + width);
-            System.out.println("orig height: " + height);
-            System.out.println("mod width: " + modifiedWidth);
-            System.out.println("mod height: " + modifiedHeight);
             for (int i=0; i<modifiedWidth; i++) {
                 for (int j=0; j<modifiedHeight; j++) {
                     if(i<width && j<height) {
